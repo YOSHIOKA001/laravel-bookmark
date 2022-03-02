@@ -1,4 +1,4 @@
-name: PHPUnit GitHub Actions Test
+name: PHPUnit GitHub Actions Test2
 
 on:
   pull_request:
