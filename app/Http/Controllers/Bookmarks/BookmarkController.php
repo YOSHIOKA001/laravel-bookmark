@@ -7,6 +7,7 @@ use App\Bookmark\UseCase\ShowBookmarkListPageUseCase;
 use App\Bookmark\UseCase\CreateBookmarkUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBookmarkRequest;
+use App\Http\Requests\UpdateBookmarkRequest;
 use App\Models\Bookmark;
 use App\Models\BookmarkCategory;
 use App\Models\User;
@@ -181,18 +182,13 @@ class BookmarkController extends Controller
      * 本人以外は編集できない
      * ブックマーク後24時間経過したものは編集できない仕様
      *
-     * @param Request $request
+     * @param UpdateBookmarkRequest $request
      * @param int $id
      * @return Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws ValidationException
      */
-    public function update(Request $request, int $id)
+    public function update(UpdateBookmarkRequest $request, int $id)
     {
-        Validator::make($request->all(), [
-            'comment' => 'required|string|min:10|max:1000',
-            'category' => 'required|integer|exists:bookmark_categories,id',
-        ])->validate();
-
         $model = Bookmark::query()->findOrFail($id);
 
         if ($model->can_not_delete_or_edit) {
