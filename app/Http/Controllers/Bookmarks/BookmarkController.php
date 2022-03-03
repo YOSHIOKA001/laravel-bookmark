@@ -188,11 +188,6 @@ class BookmarkController extends Controller
      */
     public function update(Request $request, int $id)
     {
-        if (Auth::guest()) {
-            // @note ここの処理はユーザープロフィールでも使われている
-            return redirect('/login');
-        }
-
         Validator::make($request->all(), [
             'comment' => 'required|string|min:10|max:1000',
             'category' => 'required|integer|exists:bookmark_categories,id',
