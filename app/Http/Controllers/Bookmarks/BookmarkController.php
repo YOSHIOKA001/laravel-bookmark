@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Bookmarks;
 
 use App\Bookmark\UseCase\ShowBookmarkListPageUseCase;
 use App\Bookmark\UseCase\CreateBookmarkUseCase;
+use App\Bookmark\UseCase\UpdateBookmarkUseCase;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\CreateBookmarkRequest;
 use App\Http\Requests\UpdateBookmarkRequest;
@@ -184,26 +185,17 @@ class BookmarkController extends Controller
      *
      * @param UpdateBookmarkRequest $request
      * @param int $id
+     * @param UpdateBookmarkUseCase $useCase
      * @return Application|\Illuminate\Http\RedirectResponse|\Illuminate\Routing\Redirector
      * @throws ValidationException
      */
-    public function update(UpdateBookmarkRequest $request, int $id)
+    public function update(UpdateBookmarkRequest $request, int $id, UpdateBookmarkUseCase $useCase)
     {
-        $model = Bookmark::query()->findOrFail($id);
-
-        if ($model->can_not_delete_or_edit) {
-            throw ValidationException::withMessages([
-                'can_edit' => 'ブックマーク後24時間経過したものは編集できません'
-            ]);
-        }
-
-        if ($model->user_id !== Auth::id()) {
-            abort(403);
-        }
-
-        $model->category_id = $request->category;
-        $model->comment = $request->comment;
-        $model->save();
+        $useCase->handle(
+            $id,
+            $request->comment,
+            $request->category
+        );
 
         // 成功時は一覧ページへ
         return redirect('/bookmarks', 302);
